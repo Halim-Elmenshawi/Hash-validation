@@ -1,43 +1,41 @@
 import base64
 import hashlib
-def hash_validation(password,passHash):
-# print(prfAsArray.hex()) # u can use it to print the result
-# print(int.from_bytes(prfAsArray, byteorder="big"))
-    """
-        Version3:
-        PBKDF2
-        with HMAC - SHA256, 128 - bit salt, 256-bit subkey, 10000 iterations.
-        Format: {0x01, prf(UInt32), iter count(UInt32), salt length(UInt32), salt, subkey}
-        (All UInt32s are stored big-endian.)
-    """
-    if(password==None or passHash==None):
-        print("jds")
+
+
+def hash_validation(password, hash_value):
+
+    if password is None or hash_value is None:
         return False
     try:
-        bytes = base64.b64decode(passHash)
+        hash_in_bytes = base64.b64decode(hash_value)
+        prf_as_array = hash_in_bytes[1:5]
+        iteration_count_as_array = hash_in_bytes[5:9]
+        iteration = int.from_bytes(iteration_count_as_array, byteorder="big")
+        salt_size_as_array = hash_in_bytes[9:13]
+        salt_size = int.from_bytes(salt_size_as_array, byteorder="big")
+        salt = hash_in_bytes[13:(13 + salt_size)]
 
-        prfAsArray=bytearray(4) #this Fun to store byte array
-        prfAsArray=bytes[1:5] # based on ASP.net Format
-
-        iterationCountAsArray=bytearray(4)
-        iterationCountAsArray=bytes[5:9]
-        iteration=int.from_bytes(iterationCountAsArray, byteorder="big") # to get int from bytearray
-
-        saltSizeAsArray=bytearray(4)
-        saltSizeAsArray=bytes[9:13]
-        saltSize=int.from_bytes(saltSizeAsArray, byteorder="big")
-
-        salt=bytearray(saltSize)
-        salt=bytes[13:(13+saltSize)]
-
-        savedHashedPassword=bytearray(len(bytes)-1-4-4-4-saltSize)
-        savedHashedPassword=bytes[(13+saltSize):len(bytes)]
-
-        password=password.encode()
-        password_hash = hashlib.pbkdf2_hmac("SHA256", password,salt,iteration,32)
-    except:
+        password_hash_database = hash_in_bytes[(13 + salt_size):len(hash_in_bytes)]
+        password = password.encode()
+        calculated_password_hash = hashlib.pbkdf2_hmac("SHA256", password, salt, iteration, 32)
+    except(Exception,):
         return False
-    if(password_hash.hex()==savedHashedPassword.hex()):
+    if calculated_password_hash.hex() == password_hash_database.hex():
         return True
     else:
         return False
+
+
+
+
+print(hash_validation('engineer', 'AQAAAAEAACcQAAAAEJ/+zU/UX9n7D6krTVUFadnG8IOdaYLqTJwu20pLq4uFVEo5b+mFMa1s3lAMA=='))
+"""
+Version3:
+PBKDF2
+with HMAC - SHA256, 128 - bit salt, 256-bit subkey, 10000 iterations.
+Format: {0x01, prf(UInt32), iter count(UInt32), salt length(UInt32), salt, subkey}
+(All UInt32s are stored big-endian.)
+
+# print(any_bytes.hex()) # u can use it to print the result
+# to get int from bytearray int.from_bytes() ... If byteorder is "big", the most significant byte is at the beginning of the byte array
+"""
