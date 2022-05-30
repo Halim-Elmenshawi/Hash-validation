@@ -8,16 +8,16 @@ def hash_validation(password, hash_value):
         return False
     try:
         hash_in_bytes = base64.b64decode(hash_value)
-        prf_as_array = hash_in_bytes[1:5]
-        iteration_count_as_array = hash_in_bytes[5:9]
-        iteration = int.from_bytes(iteration_count_as_array, byteorder="big")
-        salt_size_as_array = hash_in_bytes[9:13]
-        salt_size = int.from_bytes(salt_size_as_array, byteorder="big")
-        salt = hash_in_bytes[13:(13 + salt_size)]
+        prf = hash_in_bytes[1:5]
+        iteration_bytes = hash_in_bytes[5:9]
+        iteration_int = int.from_bytes(iteration_bytes, byteorder="big")
+        salt_size_bytes = hash_in_bytes[9:13]
+        salt_size_int = int.from_bytes(salt_size_bytes, byteorder="big")
+        salt = hash_in_bytes[13:(13 + salt_size_int)]
 
-        password_hash_database = hash_in_bytes[(13 + salt_size):len(hash_in_bytes)]
+        password_hash_database = hash_in_bytes[(13 + salt_size_int):len(hash_in_bytes)]
         password = password.encode()
-        calculated_password_hash = hashlib.pbkdf2_hmac("SHA256", password, salt, iteration, 32)
+        calculated_password_hash = hashlib.pbkdf2_hmac("SHA256", password, salt, iteration_int, 32)
     except(Exception,):
         return False
     if calculated_password_hash.hex() == password_hash_database.hex():
@@ -28,7 +28,7 @@ def hash_validation(password, hash_value):
 
 
 
-print(hash_validation('engineer', 'AQAAAAEAACcQAAAAEJ/+zU/UX9n7D6krTVUFadnG8IOdaYLqTJwu20pLq4uFVEo5b+mFMa1s3lAMA=='))
+print(hash_validation('!AOMfps2020', 'AQAAAAEAACcQAAAAEHfxouMZ9BU2tg2pNOhmexTPPeCAGIsVTGI9USPvZJWZPbRobJzFYzWO9WMnnEPS9g=='))
 """
 Version3:
 PBKDF2
