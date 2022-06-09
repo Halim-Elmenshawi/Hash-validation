@@ -8,6 +8,7 @@ def hash_validation(password, hash_value):
         return False
     try:
         hash_in_bytes = base64.b64decode(hash_value)
+        version = hash_in_bytes[0:1]
         prf = hash_in_bytes[1:5]
         iteration_bytes = hash_in_bytes[5:9]
         iteration_int = int.from_bytes(iteration_bytes, byteorder="big")
@@ -24,8 +25,6 @@ def hash_validation(password, hash_value):
         return True
     else:
         return False
-
-
 
 
 print(hash_validation('!AOMfps2020', 'AQAAAAEAACcQAAAAEHfxouMZ9BU2tg2pNOhmexTPPeCAGIsVTGI9USPvZJWZPbRobJzFYzWO9WMnnEPS9g=='))
