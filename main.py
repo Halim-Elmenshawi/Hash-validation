@@ -61,3 +61,4 @@ def create_hash(password, version=3, iterations=10000, ):
             return base64.b64encode(hash_generator)
     except Exception as e:
         print("Oops!", e.__class__, "occurred.")
+  
