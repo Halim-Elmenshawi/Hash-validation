@@ -1,4 +1,4 @@
-# hash_validation
+## hash_validation
 Hash Validation to use python to compare ASP.net Hash in C#
 i created this function to make adaptive to use the same PasswordHash in the Database, that has been created in c# with .net Framwork
 
